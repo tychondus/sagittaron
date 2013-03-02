@@ -38,3 +38,4 @@ gem 'jquery-rails'
 # gem 'debugger'
 
 gem 'jquery-ui-rails'
+gem 'fine-uploader-rails'

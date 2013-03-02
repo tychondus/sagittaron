@@ -13,4 +13,5 @@
 //= require jquery
 //= require jquery_ujs
 //= require jquery.ui.button
+//= require fineuploader.jquery
 //= require_tree .
