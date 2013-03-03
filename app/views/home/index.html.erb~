@@ -11,12 +11,12 @@
     <th></th>
   </tr>
 
-<% @files.each do |file| %>
+<% @images.each do |image| %>
   <tr>
-    <td><%= file.name %></td>
-    <td><%= file.size %></td>
-    <td><%= file.uuid %></td>
-    <td><%= file.description %></td>
+    <td><%= image.name %></td>
+    <td><%= image.size %></td>
+    <td><%= image.uuid %></td>
+    <td><%= image.description %></td>
   </tr>
 <% end %>
 </table>

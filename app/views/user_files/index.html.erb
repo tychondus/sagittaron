@@ -1,0 +1,29 @@
+<h1>Listing user_files</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Size</th>
+    <th>Uuid</th>
+    <th>Description</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @user_files.each do |user_file| %>
+  <tr>
+    <td><%= user_file.name %></td>
+    <td><%= user_file.size %></td>
+    <td><%= user_file.uuid %></td>
+    <td><%= user_file.description %></td>
+    <td><%= link_to 'Show', user_file %></td>
+    <td><%= link_to 'Edit', edit_user_file_path(user_file) %></td>
+    <td><%= link_to 'Destroy', user_file, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New User file', new_user_file_path %>
