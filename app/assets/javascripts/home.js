@@ -5,10 +5,18 @@ $(document).ready(function() {
          customHeaders: { 'X-CSRF-Token' : $('meta[name="csrf-token"]').attr('content')
          },
          endpoint: '/home/upload'
+      },
+      multiple: false,
+      text: { uploadButton: 'Upload' }
+   }).on('complete', function(event, id, filename, responseJSON) {
+      if (responseJSON.success) {
+         console.debug('Success');
       }
+      else {
+         console.debug('Failure');
+      }
+      $("div .qq-upload-list").each(function() {
+         $("li:not(:last)", this).hide();
+      });
    });
 });
-
-function fileValidation() {
-   console.debug("onclick was successful");
-}
