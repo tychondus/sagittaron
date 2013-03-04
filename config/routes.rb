@@ -2,7 +2,7 @@ Blog::Application.routes.draw do
   resources :user_files
 
 
-  get "home/index"
+  get "user_files/index"
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -60,6 +60,6 @@ Blog::Application.routes.draw do
   # This is a legacy wild controller route that's not recommended for RESTful applications.
   # Note: This route will make all actions in every controller accessible via GET requests.
   # match ':controller(/:action(/:id))(.:format)'
-  root :to => "home#index"
-  match "/home/upload" => "home#upload"
+  root :to => "user_files#index"
+  match "/files/upload" => "user_files#upload"
 end

@@ -1,10 +1,13 @@
 $(document).ready(function() {
-   console.debug("Ready!");
+   uploadEvent()
+});
+
+function uploadEvent() {
    $('#jquery-wrapped-fineuploader').fineUploader({
       request: {
          customHeaders: { 'X-CSRF-Token' : $('meta[name="csrf-token"]').attr('content')
          },
-         endpoint: '/home/upload'
+         endpoint: '/files/upload'
       },
       multiple: false,
       text: { uploadButton: 'Upload' }
@@ -19,4 +22,5 @@ $(document).ready(function() {
          $("li:not(:last)", this).hide();
       });
    });
-});
+
+}
