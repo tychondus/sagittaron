@@ -84,7 +84,7 @@ class UserFilesController < ApplicationController
   def upload
      dir_path = 'app/assets/files'
      #save to table
-     @file = UserFile.new( {:name => params[:qqfile], :size => params[:qqtotalfielsize], :uuid => params[:qquuid] })
+     @file = UserFile.new( {:name => params[:qqfile], :size => params[:qqtotalfilesize], :uuid => params[:qquuid] })
      if @file.save 
         @is_file_saved = true
      end
@@ -109,7 +109,7 @@ class UserFilesController < ApplicationController
      end
 
      if @is_file_saved and @is_file_exists
-        render :json => { success: true }.to_json 
+        render :json => { success: true, file: @file }.to_json 
      else
         render :json => { success: false }.to_json
      end
