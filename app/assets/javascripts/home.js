@@ -14,12 +14,8 @@ function uploadEvent() {
    }).on('complete', function(event, id, filename, responseJSON) {
       console.debug(responseJSON);
       if (responseJSON.success) {
-         console.debug('Success');
          var element = uploadedFiles(responseJSON.file);
          $('table').append(element);
-      }
-      else {
-         console.debug('Failure');
       }
       $("div .qq-upload-list").each(function() {
          $("li:not(:last)", this).hide();
@@ -28,12 +24,10 @@ function uploadEvent() {
 
 }
 
+/* currently this only handles one file object. For multiple file object, add a for loop.
+ * Ensure the controller can handle multiple files.
+ */
 function uploadedFiles(fileObj) {
-   console.debug(fileObj);
-   console.debug(fileObj.name);
-   console.debug(fileObj.description);
-   console.debug(fileObj.description == null);
-   console.debug(fileObj.description == 'null');
    var element = '<tr>\n' +
                  '  <td>' + fileObj.name + '</td>\n' +
                  '  <td>' + fileObj.size + '</td>\n' +
