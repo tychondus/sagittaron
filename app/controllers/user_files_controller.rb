@@ -84,16 +84,20 @@ class UserFilesController < ApplicationController
   def upload
      time = Time.new
      today = time.strftime('%Y-%m-%d')
-     puts today
      dir_paths = [ 'public/files/uploaded', 'public/files/thumbs' ]
       
      #check if the dir exists otherwise create it
      dir_paths.each do |path|
-        FileUtils.mkdir_p(File.join(Dir.getwd, path)) unless File.directory?(File.join(Dir.getwd, path))
+        FileUtils.mkdir_p( File.join( Dir.getwd, File.join( path, today ) ) ) unless File.directory?( File.join( Dir.getwd, File.join( path , today ) ) )
      end
 
-     dir_today = FileUtils.mkdir_p(File.join(File.join(Dir.getwd, dir_paths[0]), today))
-     uploaded_file = save_to_fs(File.join(dir_paths[0], File.join(today, params[:qquuid])), "wb", env['action_dispatch.request.request_parameters']['qqfile'])
+     uploaded_file = save_to_fs( File.join( dir_paths[0], File.join( today, params[:qquuid] ) ), 
+                                 "wb", 
+                                 env['action_dispatch.request.request_parameters']['qqfile'] )
+     thumb = generate_thumb( env['action_dispatch.request.request_parameters']['qqfile'],
+                             File.extname(params[:qqfile]),
+                             '75x75',
+                             File.join( dir_paths[1], File.join( today, params[:qquuid] ) ) )
      unless uploaded_file.nil?
         @is_file_exists = true
         #save to table
@@ -126,6 +130,25 @@ class UserFilesController < ApplicationController
            newfile.close
            return_val = newfile
         end
+     end
+     return return_val
+  end
+
+  private
+  def generate_thumb(stream, ext, size, output_file)
+     return_val = nil
+     puts ext.downcase
+     ext_names = [ '.jpg', '.jpeg', '.tiff', '.bmp', '.png' ]
+     if ext_names.include? (ext.downcase)
+        image = MiniMagick::Image.read(stream, ext)
+        image.combine_options do |thumb|
+           thumb.resize size
+           thumb.background "transparent"
+           thumb.gravity "center"
+           thumb.extent size
+        end
+        image.write(output_file)
+        return_val = image
      end
      return return_val
   end
