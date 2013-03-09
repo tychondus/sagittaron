@@ -4,7 +4,8 @@
   <tr>
     <th>Name</th>
     <th>Size</th>
-    <th>Uuid</th>
+    <th>File</th>
+    <th>Thumbnail</th>
     <th>Description</th>
     <th></th>
     <th></th>
@@ -15,7 +16,8 @@
   <tr>
     <td><%= user_file.name %></td>
     <td><%= user_file.size %></td>
-    <td><%= user_file.uuid %></td>
+    <td><%= user_file.file_location %></td>
+    <td><%= user_file.thumb_location %></td>
     <td><%= user_file.description %></td>
     <td><%= link_to 'Show', user_file %></td>
     <td><%= link_to 'Edit', edit_user_file_path(user_file) %></td>

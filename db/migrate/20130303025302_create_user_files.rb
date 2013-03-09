@@ -3,7 +3,8 @@ class CreateUserFiles < ActiveRecord::Migration
     create_table :user_files do |t|
       t.string :name
       t.integer :size
-      t.string :uuid
+      t.string :file_location
+      t.string :thumb_location
       t.text :description
 
       t.timestamps

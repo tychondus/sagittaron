@@ -94,19 +94,23 @@ class UserFilesController < ApplicationController
      uploaded_file = save_to_fs( File.join( dir_paths[0], File.join( today, params[:qquuid] ) ), 
                                  "wb", 
                                  env['action_dispatch.request.request_parameters']['qqfile'] )
-     thumb = generate_thumb( env['action_dispatch.request.request_parameters']['qqfile'],
-                             File.extname(params[:qqfile]),
-                             '75x75',
-                             File.join( dir_paths[1], File.join( today, params[:qquuid] ) ) )
+     Rails.logger.debug("uploaded_file = "  + uploaded_file.inspect)
+     thumb_file = generate_thumb( env['action_dispatch.request.request_parameters']['qqfile'],
+                                  File.extname(params[:qqfile]),
+                                 '75x75',
+                                  File.join( dir_paths[1], File.join( today, params[:qquuid] ) ) )
+     Rails.logger.debug("thumb_file = " + thumb_file.inspect)
      unless uploaded_file.nil?
         @is_file_exists = true
         #save to table
-        @file = UserFile.new( { :name => params[:qqfile], 
-                                :size => params[:qqtotalfilesize], 
-                                :uuid => File.join(today,params[:qquuid]) 
-                              } )
+        validated_params = generate_params(params, dir_paths, today, thumb_file)
+        Rails.logger.debug ("validated_params = " + validated_params.to_s)
+        @file = UserFile.new(validated_params)
+        Rails.logger.debug ("record values = " + @file.attributes.inspect)
         if @file.save 
            @is_file_saved = true
+        else
+           Rails.logger.error("failed to save " + @file.attributes.inspect)
         end
      end
 
@@ -115,6 +119,17 @@ class UserFilesController < ApplicationController
      else
         render :json => { success: false }.to_json
      end
+  end
+
+  private
+  def generate_params(in_params, paths, today_dir, is_thumb) 
+     param = { :name => in_params[:qqfile],
+               :size => in_params[:qqtotalfilesize],
+               :file_location => File.join( paths[0], File.join( today_dir, in_params[:qquuid] ) ) }
+     if is_thumb
+        param.merge!( :thumb_location => File.join( paths[1], File.join( today_dir, in_params[:qquuid] ) ) )
+     end
+     return param
   end
 
   private
@@ -137,7 +152,6 @@ class UserFilesController < ApplicationController
   private
   def generate_thumb(stream, ext, size, output_file)
      return_val = nil
-     puts ext.downcase
      ext_names = [ '.jpg', '.jpeg', '.tiff', '.bmp', '.png' ]
      if ext_names.include? (ext.downcase)
         image = MiniMagick::Image.read(stream, ext)

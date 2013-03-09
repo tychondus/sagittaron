@@ -31,8 +31,14 @@ function uploadedFiles(fileObj) {
    var element = '<tr>\n' +
                  '  <td>' + fileObj.name + '</td>\n' +
                  '  <td>' + fileObj.size + '</td>\n' +
-                 '  <td>' + fileObj.uuid + '</td>\n';
+                 '  <td>' + fileObj.file_location + '</td>\n';
 
+   if (fileObj.thumb_location) {
+      element += '  <td>' + fileObj.thumb_location + '</td>\n';
+   }
+   else {
+      element += '  <td></td>\n';
+   }
    if (fileObj.description) {
       element += '  <td>' + fileObj.description + '</td>\n';
    }

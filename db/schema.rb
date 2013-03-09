@@ -16,7 +16,8 @@ ActiveRecord::Schema.define(:version => 20130303025302) do
   create_table "user_files", :force => true do |t|
     t.string   "name"
     t.integer  "size"
-    t.string   "uuid"
+    t.string   "file_location"
+    t.string   "thumb_location"
     t.text     "description"
     t.datetime "created_at",  :null => false
     t.datetime "updated_at",  :null => false
