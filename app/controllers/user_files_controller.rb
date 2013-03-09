@@ -90,23 +90,32 @@ class UserFilesController < ApplicationController
      dir_paths.each do |path|
         FileUtils.mkdir_p( File.join( Dir.getwd, File.join( path, today ) ) ) unless File.directory?( File.join( Dir.getwd, File.join( path , today ) ) )
      end
-
+     
+     #save incoming file to dir_paths[0]
      uploaded_file = save_to_fs( File.join( dir_paths[0], File.join( today, params[:qquuid] ) ), 
                                  "wb", 
                                  env['action_dispatch.request.request_parameters']['qqfile'] )
      Rails.logger.debug("uploaded_file = "  + uploaded_file.inspect)
-     thumb_file = generate_thumb( env['action_dispatch.request.request_parameters']['qqfile'],
-                                  File.extname(params[:qqfile]),
-                                 '75x75',
-                                  File.join( dir_paths[1], File.join( today, params[:qquuid] ) ) )
+     
+     #if incoming file is of type image. create a thumbnail
+     thumb_file = create_thumbnail( env['action_dispatch.request.request_parameters']['qqfile'],
+                                    File.extname(params[:qqfile]),
+                                    '75x75',
+                                    File.join( dir_paths[1], File.join( today, params[:qquuid] ) ) )
      Rails.logger.debug("thumb_file = " + thumb_file.inspect)
+
      unless uploaded_file.nil?
         @is_file_exists = true
-        #save to table
-        validated_params = generate_params(params, dir_paths, today, thumb_file)
+        
+        #create paramaters to pass into UserFile object
+        validated_params = create_param(params, dir_paths, today, thumb_file)
         Rails.logger.debug ("validated_params = " + validated_params.to_s)
+        
+        #create a UserFile object
         @file = UserFile.new(validated_params)
         Rails.logger.debug ("record values = " + @file.attributes.inspect)
+        
+        #save to db
         if @file.save 
            @is_file_saved = true
         else
@@ -122,7 +131,7 @@ class UserFilesController < ApplicationController
   end
 
   private
-  def generate_params(in_params, paths, today_dir, is_thumb) 
+  def create_param(in_params, paths, today_dir, is_thumb) 
      param = { :name => in_params[:qqfile],
                :size => in_params[:qqtotalfilesize],
                :file_location => File.join( paths[0], File.join( today_dir, in_params[:qquuid] ) ) }
@@ -150,7 +159,7 @@ class UserFilesController < ApplicationController
   end
 
   private
-  def generate_thumb(stream, ext, size, output_file)
+  def create_thumbnail(stream, ext, size, output_file)
      return_val = nil
      ext_names = [ '.jpg', '.jpeg', '.tiff', '.bmp', '.png' ]
      if ext_names.include? (ext.downcase)
