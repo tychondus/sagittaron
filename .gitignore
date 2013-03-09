@@ -17,3 +17,5 @@
 #Ignore created folder
 /app/assets/files
 /app/assets/files/*
+public/files
+public/files/*

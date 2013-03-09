@@ -82,29 +82,27 @@ class UserFilesController < ApplicationController
   end
 
   def upload
-     dir_path = 'app/assets/files'
-     #save to table
-     @file = UserFile.new( {:name => params[:qqfile], :size => params[:qqtotalfilesize], :uuid => params[:qquuid] })
-     if @file.save 
-        @is_file_saved = true
+     time = Time.new
+     today = time.strftime('%Y-%m-%d')
+     puts today
+     dir_paths = [ 'public/files/uploaded', 'public/files/thumbs' ]
+      
+     #check if the dir exists otherwise create it
+     dir_paths.each do |path|
+        FileUtils.mkdir_p(File.join(Dir.getwd, path)) unless File.directory?(File.join(Dir.getwd, path))
      end
 
-     #check if the dir exists otherwise create it
-     Dir.mkdir(File.join(Dir.getwd, dir_path)) unless File.directory?(File.join(Dir.getwd, dir_path))
-     
-     #save to fs 
-     begin
-        newfile = File.open(File.join(dir_path, @file.uuid), "wb")
-        str = request.body.read
-        newfile.write(str)
-     rescue IOError => e
-        puts "failed to write " + newfile
-        #failed to write to disk, then delete the record
-        @file.delete
-     ensure
-        unless newfile.nil?
-          newfile.close
-          @is_file_exists = true
+     dir_today = FileUtils.mkdir_p(File.join(File.join(Dir.getwd, dir_paths[0]), today))
+     uploaded_file = save_to_fs(File.join(dir_paths[0], File.join(today, params[:qquuid])), "wb", env['action_dispatch.request.request_parameters']['qqfile'])
+     unless uploaded_file.nil?
+        @is_file_exists = true
+        #save to table
+        @file = UserFile.new( { :name => params[:qqfile], 
+                                :size => params[:qqtotalfilesize], 
+                                :uuid => File.join(today,params[:qquuid]) 
+                              } )
+        if @file.save 
+           @is_file_saved = true
         end
      end
 
@@ -113,5 +111,22 @@ class UserFilesController < ApplicationController
      else
         render :json => { success: false }.to_json
      end
+  end
+
+  private
+  def save_to_fs(name, mode, stream)
+     return_val = nil
+     begin
+        newfile = File.open(name, mode)
+        newfile.write(stream.read)
+     rescue IOError => e
+        Rails.logger.error(e)
+     ensure
+        unless newfile.nil?
+           newfile.close
+           return_val = newfile
+        end
+     end
+     return return_val
   end
 end
