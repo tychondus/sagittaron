@@ -40,3 +40,7 @@ gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'fine-uploader-rails'
 gem 'mini_magick'
+
+group :development do 
+  gem 'rspec-rails'
+end
